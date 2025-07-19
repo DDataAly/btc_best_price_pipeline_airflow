@@ -16,6 +16,7 @@ import json
 # - ensure that I indeed need order_book
 # - check if market makers have apis
 # - look into async to query multiple exchanges simultaneously
+# = shall I use Websocket instead of standard HTTP?
 
 
 # Not relevant at the moment - OHLC -  Historical data BTCUSD returned as a dataframe
