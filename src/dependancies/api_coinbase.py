@@ -6,6 +6,28 @@ import json
 
 '''
 Level 2 provides aggregated view, use Level 3 for information on the individual orders
+
+Response format:
+{
+  "sequence": 13051505638,  -- this is the order book snapshot number, ie number of the last order added to the book 
+  "bids": [
+    [
+      "6247.58",
+      "6.3578146",
+      2    -- number of bids at this price
+    ]
+  ],
+  "asks": [
+    [
+      "6251.52",
+      "2",
+      1
+    ]
+  ],
+  "time": "2021-02-12T01:09:23.334Z"
+}
+
+
 Example output
        price_asks volume_asks
 0         118222.61  0.00850559
@@ -18,7 +40,7 @@ import pandas as pd
 request_params = {'level':2}
 data1 = requests.get('https://api.exchange.coinbase.com/products/BTC-USD/book', params = request_params).json()
 
-# This is recording all order book in memory - is this what we want?
+# This is recording all order book in memory - is this what we want? 13088 asks records returned
 with open ('order_book_coinbase.json','w') as b:
     json.dump(data1,b)
 

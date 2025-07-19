@@ -77,8 +77,31 @@ pprint.pprint(kraken_btc)
 
 
 
-# Order book of a given depth - BTCUSD returned as a dataframe 
-'''Example output
+# Order book of Level 2 - BTCUSD returned as a dataframe 
+'''
+Returns up to 500 orders, default value is 100  - this set up with the count parameter
+Example response:
+{
+  "error": [],
+  "result": {
+    "XXBTZUSD": {
+      "asks": [
+        [
+          "118225.00000",
+          "2.949",
+          1752938894     -- timestamp 
+        ]],
+     "bids": [
+        [
+          "118221.00000",
+          "0.49",
+          1752938894
+        ]]}
+        }
+}
+
+
+Example output
    time_asks    price_asks volume_asks           time_bids    price_bids volume_bids
 0 2025-07-18 16:04:38  117987.60000      10.563 2025-07-18 16:04:35  117987.50000       0.001
 1 2025-07-18 16:04:37  117987.70000       0.063 2025-07-18 16:04:12  117979.50000       0.002
