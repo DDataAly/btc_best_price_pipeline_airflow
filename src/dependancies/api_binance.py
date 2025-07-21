@@ -7,7 +7,7 @@ import pandas as pd
 # Order book - Level 2 only - BTC-USD returned as a dataframe 
 '''
 Limit specifies the required depth of the order book, ie number of orders returned.
-The default limit is 100 which has weight 1; permitted rate is 1200 weight per minute
+The default limit is 100 which has weight 5; permitted rate is 1200 weight per minute
 Response format:
 {
   "lastUpdateId": 1027024,
