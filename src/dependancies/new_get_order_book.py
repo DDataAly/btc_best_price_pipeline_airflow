@@ -86,7 +86,10 @@ class Exchange():
             order_cost_total = order_full_cost + order_partial_cost
             return order_cost_total
         except IndexError:
-            print('The order book does not have enough asks to fulfill this order')
+            print(f'The order book in {self.name} does not have enough asks to fulfill this order')
+
+    def find_best_price(self):
+        pass        
 
 
 if __name__== '__main__':
@@ -96,7 +99,7 @@ if __name__== '__main__':
 
     exchanges = [kraken, binance, coinbase]
     path = '/home/alyona/personal_projects/project_data_fetching/data'
-    order_volume = 0.5
+    order_volume = 20
     prices = []
 
 
@@ -106,10 +109,17 @@ if __name__== '__main__':
             snapshot = exchange.request_order_book_snapshot()
             exchange.save_order_book_snapshot(snapshot, path, request_time)
             price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
-
-            exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
-            prices.append((exchange.order_cost_total, exchange.name))
+            try:
+                exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
+                prices.append((float(exchange.order_cost_total), exchange.name))
+                prices.sort()
+                best_price = list(prices[0])
+                best_price.append(request_time)
+            except TypeError:
+                continue
         print (prices)    
+        print (best_price) 
+
         time.sleep(5)
 
 
