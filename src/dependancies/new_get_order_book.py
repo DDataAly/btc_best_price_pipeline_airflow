@@ -5,7 +5,7 @@ from datetime import datetime
 import copy
 import time
 import pandas as pd
-import numpy as np
+
 
 def get_request_time():
     request_time = datetime.now()
@@ -18,11 +18,22 @@ def coinbase_reduce_snapshot_to_20_records(snapshot):
     reduced_snapshot['asks'] = snapshot['asks'][0:20]
     return reduced_snapshot
 
-def record_best_price(best_deal_price_exchange, request_time, path):
-    file_name = f'{path}/order_split.csv'
-    record = [request_time, best_deal_price_exchange[1], best_deal_price_exchange[0]]
-    record_df = pd.DataFrame(record)
-    record_df.to_csv (file_name, mode ='a')
+def create_best_price_df(best_price:list) -> pd.dataframe:
+    best_price_dict = {
+                        'price' : best_price[0], 
+                        'exchange': best_price[1],
+                        'request_time': best_price[2]
+                        }
+    best_price_df = pd.DataFrame(best_price_dict)
+    return best_price_df
+
+
+def record_best_price(best_price_df, path):
+    file_name = f'{path}/best_deal.csv'
+    pass
+    # record = [request_time, best_deal_price_exchange[1], best_deal_price_exchange[0]]
+    # record_df = pd.DataFrame(record)
+    # record_df.to_csv (file_name, mode ='a')
 
 
 class Exchange():
@@ -121,6 +132,31 @@ if __name__== '__main__':
         print (best_price) 
 
         time.sleep(5)
+
+
+
+#    prices = []
+
+
+#     for i in range (0,1):
+#         request_time = get_request_time()
+#         for exchange in exchanges:          
+#             snapshot = exchange.request_order_book_snapshot()
+#             exchange.save_order_book_snapshot(snapshot, path, request_time)
+#             price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
+#             try:
+#                 exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
+#                 prices.append((float(exchange.order_cost_total), exchange.name))
+#                 prices.sort()
+#                 best_price = list(prices[0])
+#                 best_price.append(request_time)
+#             except TypeError:
+#                 continue
+#         print (prices)    
+#         print (best_price) 
+
+#         time.sleep(5)
+
 
 
 
