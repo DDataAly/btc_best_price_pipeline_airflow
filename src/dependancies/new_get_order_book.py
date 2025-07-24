@@ -1,8 +1,6 @@
-import pprint as pp
 import requests
 import json
 from datetime import datetime
-import copy
 import time
 import pandas as pd
 import os
@@ -151,29 +149,6 @@ if __name__== '__main__':
         record_best_price(best_price_df, path)
         time.sleep(15)
 
-
-
-#    prices = []
-
-
-#     for i in range (0,1):
-#         request_time = get_request_time()
-#         for exchange in exchanges:          
-#             snapshot = exchange.request_order_book_snapshot()
-#             exchange.save_order_book_snapshot(snapshot, path, request_time)
-#             price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
-#             try:
-#                 exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, vol_per_order)
-#                 prices.append((float(exchange.order_cost_total), exchange.name))
-#                 prices.sort()
-#                 best_price = list(prices[0])
-#                 best_price.append(request_time)
-#             except TypeError:
-#                 continue
-#         print (prices)    
-#         print (best_price) 
-
-#         time.sleep(5)
 
 
 
