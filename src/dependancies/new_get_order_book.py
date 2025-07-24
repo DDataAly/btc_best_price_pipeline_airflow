@@ -5,7 +5,7 @@ from datetime import datetime
 import copy
 import time
 import pandas as pd
-
+import os
 
 def get_request_time():
     request_time = datetime.now()
@@ -18,7 +18,31 @@ def coinbase_reduce_snapshot_to_20_records(snapshot):
     reduced_snapshot['asks'] = snapshot['asks'][0:20]
     return reduced_snapshot
 
-def create_best_price_df(best_price:list) -> pd.dataframe:
+def find_best_price(exchanges: list, path: str, order_volume: float) -> list:
+    request_time = get_request_time()
+    for exchange in exchanges:          
+        snapshot = exchange.request_order_book_snapshot()
+        if exchange.name =='coinbase':   # as Coinbase sends all order book in the API request
+            snapshot = coinbase_reduce_snapshot_to_20_records(snapshot)   
+        exchange.save_order_book_snapshot(snapshot, path, request_time)
+        price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
+        try:
+            exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
+            prices.append((float(exchange.order_cost_total), exchange.name))
+        except TypeError:
+            continue
+    if prices:
+        prices.sort()
+        best_price = list(prices[0])
+        best_price.append(request_time)
+        return best_price
+    else:
+        return ['Not available', 'Checked all exchanges', request_time]
+    
+        
+
+
+def create_best_price_df(best_price:list) -> pd.DataFrame:
     best_price_dict = {
                         'price' : best_price[0], 
                         'exchange': best_price[1],
@@ -30,10 +54,9 @@ def create_best_price_df(best_price:list) -> pd.dataframe:
 
 def record_best_price(best_price_df, path):
     file_name = f'{path}/best_deal.csv'
-    pass
-    # record = [request_time, best_deal_price_exchange[1], best_deal_price_exchange[0]]
-    # record_df = pd.DataFrame(record)
-    # record_df.to_csv (file_name, mode ='a')
+    column_headers = False if os.path.isfile(file_name) else True
+    best_price_df.to_csv (file_name, mode ='a', header = column_headers)
+ 
 
 
 class Exchange():
@@ -50,11 +73,10 @@ class Exchange():
 
 
     def save_order_book_snapshot(self, snapshot, path, request_time):
-        file_name = f'{path}/{self.name}/{self.name}_{str(request_time)}.json'  
-        if self.name =='coinbase':
-            snapshot = coinbase_reduce_snapshot_to_20_records(snapshot)    
+        file_name = f'{path}/{self.name}/{self.name}_{str(request_time)}.json'   
         with open (file_name, 'w') as file:
             json.dump(snapshot, file)
+
 
 
     def parse_snapshot_to_dataframe (self, snapshot):
@@ -99,37 +121,23 @@ class Exchange():
         except IndexError:
             print(f'The order book in {self.name} does not have enough asks to fulfill this order')
 
-    def find_best_price(self):
-        pass        
+
 
 
 if __name__== '__main__':
     kraken = Exchange('kraken','https://api.kraken.com/0/public/Depth',{'pair':'XXBTZUSD', 'count':20}, 'XXBTZUSD')  
     binance = Exchange('binance', 'https://api.binance.com/api/v3/depth', {'symbol': 'BTCUSDT', 'limit':20}, 'BTCUSDT')  
     coinbase = Exchange('coinbase','https://api.exchange.coinbase.com/products/BTC-USD/book', {'level':2}, 'BTC-USD')
-
+ 
     exchanges = [kraken, binance, coinbase]
     path = '/home/alyona/personal_projects/project_data_fetching/data'
-    order_volume = 20
+    order_volume = 5
     prices = []
 
 
     for i in range (0,1):
-        request_time = get_request_time()
-        for exchange in exchanges:          
-            snapshot = exchange.request_order_book_snapshot()
-            exchange.save_order_book_snapshot(snapshot, path, request_time)
-            price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
-            try:
-                exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
-                prices.append((float(exchange.order_cost_total), exchange.name))
-                prices.sort()
-                best_price = list(prices[0])
-                best_price.append(request_time)
-            except TypeError:
-                continue
-        print (prices)    
-        print (best_price) 
+        best_price = find_best_price(exchanges, path, order_volume)
+        print (best_price)
 
         time.sleep(5)
 
