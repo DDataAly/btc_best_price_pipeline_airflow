@@ -13,12 +13,18 @@ def get_request_time():
 
 
 def coinbase_reduce_snapshot_to_20_records(snapshot):
-    reduced_snapshot = copy.deepcopy(snapshot)
-    reduced_snapshot['bids'] = snapshot['bids'][0:20]
-    reduced_snapshot['asks'] = snapshot['asks'][0:20]
+    reduced_snapshot = {
+        'bids': snapshot['bids'][0:20], 
+        'asks': snapshot['asks'][0:20], 
+        'sequence' : snapshot['sequence'],
+        'auction_mode' :snapshot['auction_mode'],
+        'auction' : snapshot['auction'],
+        'time': snapshot['time']
+        }
     return reduced_snapshot
 
-def find_best_price(exchanges: list, path: str, order_volume: float) -> list:
+
+def find_best_price(exchanges: list, path: str, vol_per_order: float) -> list:
     request_time = get_request_time()
     for exchange in exchanges:          
         snapshot = exchange.request_order_book_snapshot()
@@ -27,7 +33,7 @@ def find_best_price(exchanges: list, path: str, order_volume: float) -> list:
         exchange.save_order_book_snapshot(snapshot, path, request_time)
         price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
         try:
-            exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
+            exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, vol_per_order)
             prices.append((float(exchange.order_cost_total), exchange.name))
         except TypeError:
             continue
@@ -44,18 +50,19 @@ def find_best_price(exchanges: list, path: str, order_volume: float) -> list:
 
 def create_best_price_df(best_price:list) -> pd.DataFrame:
     best_price_dict = {
-                        'price' : best_price[0], 
+                        'price' : round(best_price[0],2), 
                         'exchange': best_price[1],
                         'request_time': best_price[2]
                         }
-    best_price_df = pd.DataFrame(best_price_dict)
+    best_price_df = pd.DataFrame([best_price_dict])
     return best_price_df
 
 
 def record_best_price(best_price_df, path):
     file_name = f'{path}/best_deal.csv'
     column_headers = False if os.path.isfile(file_name) else True
-    best_price_df.to_csv (file_name, mode ='a', header = column_headers)
+    best_price_df.to_csv (file_name, mode ='a', header = column_headers, index=False)
+    print ('Recording completed')
  
 
 
@@ -99,11 +106,11 @@ class Exchange():
         price_volume_df = pd.DataFrame.from_dict(price_volume)
         return price_volume_df
 
-    def calculate_order_price (self, price_volume_df, order_volume):
+    def calculate_order_price (self, price_volume_df, vol_per_order):
         price_volume_df ['cost'] = price_volume_df['price'] * price_volume_df['volume']
         price_volume_df['cum_volume'] = price_volume_df['volume'].cumsum()
 
-        cutoff_idx_df = price_volume_df.loc[price_volume_df['cum_volume']>=order_volume]
+        cutoff_idx_df = price_volume_df.loc[price_volume_df['cum_volume']>=vol_per_order]
         try:
             cutoff_idx = cutoff_idx_df.index[0]
             
@@ -113,7 +120,7 @@ class Exchange():
                 order_full_cost = price_volume_df.loc[0:cutoff_idx-1,'cost'].sum()
                 order_full_vol = price_volume_df.loc[cutoff_idx-1, 'cum_volume']
             
-            order_partial_vol = order_volume - order_full_vol
+            order_partial_vol = vol_per_order - order_full_vol
             order_partial_cost = price_volume_df.loc[cutoff_idx,'price'] * order_partial_vol
             
             order_cost_total = order_full_cost + order_partial_cost
@@ -129,17 +136,20 @@ if __name__== '__main__':
     binance = Exchange('binance', 'https://api.binance.com/api/v3/depth', {'symbol': 'BTCUSDT', 'limit':20}, 'BTCUSDT')  
     coinbase = Exchange('coinbase','https://api.exchange.coinbase.com/products/BTC-USD/book', {'level':2}, 'BTC-USD')
  
-    exchanges = [kraken, binance, coinbase]
+    exchanges = [kraken, coinbase]
     path = '/home/alyona/personal_projects/project_data_fetching/data'
-    order_volume = 5
+    total_order_vol = 8
+    num_of_transactions = 20
+    vol_per_order = total_order_vol/num_of_transactions
+
     prices = []
 
 
-    for i in range (0,1):
-        best_price = find_best_price(exchanges, path, order_volume)
-        print (best_price)
-
-        time.sleep(5)
+    for i in range (0,num_of_transactions):
+        best_price = find_best_price(exchanges, path, vol_per_order)
+        best_price_df = create_best_price_df(best_price)
+        record_best_price(best_price_df, path)
+        time.sleep(15)
 
 
 
@@ -153,7 +163,7 @@ if __name__== '__main__':
 #             exchange.save_order_book_snapshot(snapshot, path, request_time)
 #             price_volume_df = exchange.parse_snapshot_to_dataframe(snapshot)
 #             try:
-#                 exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, order_volume)
+#                 exchange.order_cost_total = exchange.calculate_order_price(price_volume_df, vol_per_order)
 #                 prices.append((float(exchange.order_cost_total), exchange.name))
 #                 prices.sort()
 #                 best_price = list(prices[0])
