@@ -44,7 +44,7 @@ Saved Locally:\
 ## 🖥️ Demo Output
 
 ![CLI demo](docs/cli_demo_output.png)
-![Local best_csv_demo_output](docs/best_csv_demo_ouput.png)
+![Best_csv_demo_output](docs/best_csv_demo_ouput.png)
 
 
 ## 📁 File Structure
