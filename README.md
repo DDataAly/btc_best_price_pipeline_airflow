@@ -28,18 +28,18 @@ Run from the command line:
 python main.py
 ```
 
-You'll be prompted to input:
-💠 Total BTC amount to purchase
-💠 Duration of the purchase window (in seconds)
-💠 Number of transactions (optional, default is one every 10 seconds)
+You'll be prompted to input:\
+💠 Total BTC amount to purchase\
+💠 Duration of the purchase window (in seconds)\
+💠 Number of transactions (optional, default is one every 10 seconds)\
 
 ## ◀️ Output
-In CLI:
-💠 Best price per transaction
+In CLI:\
+💠 Best price per transaction\
 💠 Final total cost after all transactions
 
-Saved Locally:
-💠 data/best_deal.csv – records best price and exchange per transaction
+Saved Locally:\
+💠 data/best_deal.csv – records best price and exchange per transaction\
 💠 exchange-specific folders (e.g., data/binance/) store raw JSON snapshots
 
 
