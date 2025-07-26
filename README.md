@@ -26,6 +26,7 @@ Run from the command line:
 
 ```bash
 python main.py
+```
 
 You'll be prompted to input:
 💠 Total BTC amount to purchase
@@ -60,6 +61,7 @@ BTC best price tracker
 ├── .gitignore
 ├── requirements.txt
 └── README.md
+```
 
 ## 📌 Future Improvements
 - Switch to WebSocket streaming for real-time updates
