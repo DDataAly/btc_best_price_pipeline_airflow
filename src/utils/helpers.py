@@ -27,4 +27,4 @@ def record_best_price(best_price_df: pd.DataFrame, path: str):
         header=col_headers,
         index=False
     )
-    print("Recording completed")
+    print("Fetching new price...")
