@@ -2,8 +2,7 @@
 
 ## 🔰 Overview
 
-A simple CLI tool that finds the **best available price** for purchasing a given amount of BTC by querying multiple cryptocurrency exchanges.  
-It implements a **Dollar Cost Averaging** approach, splitting the total purchase into smaller transactions spaced out over time.
+A simple CLI tool that finds the **best available price** for purchasing a given amount of BTC by querying multiple cryptocurrency exchanges. It implements a **Dollar Cost Averaging** approach, splitting the total purchase into smaller transactions spaced out over time.
 
 ## 🔧 Tech Stack
 - **Python 3.12** – primary programming language
