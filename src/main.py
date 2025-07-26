@@ -6,29 +6,22 @@ from utils.helpers import create_best_price_df, record_best_price
 
 import time
 
-total_order_vol = float(input("Please enter the number of btc to buy: "))
-trans_time = int(input("Please enter the desired time of purchase in sec: "))
+def get_user_input():
+    total_order_vol = float(input("Please enter the number of btc to buy: "))
+    trans_time = int(input("Please enter the desired time of purchase in sec: "))
 
-# Does API calls to Exchanges every 10 seconds by default
-num_trans_default = max(1, trans_time // 10)
-num_trans_user = input(
-        f"Default is {num_trans_default}."
-        "Please enter another value or press Enter to accept:  "
+    # Does API calls to the exchanges every 10 seconds by default
+    num_trans_default = max(1, trans_time // 10)
+    num_trans_user = input(
+        f"Default num of transactions is {num_trans_default}."
+        " Please enter another value or press Enter to accept:  "
     )
-
-num_trans = num_trans_default if num_trans_user =='' else int(num_trans_user)
-vol_per_order = total_order_vol / num_trans
-
-
-def run_code(num_trans, vol_per_order, exchanges, path):
-    for i in range(0, num_trans):
-        best_price = find_best_price(exchanges, path, vol_per_order)
-        best_price_df = create_best_price_df(best_price)
-        record_best_price(best_price_df, path)
-        time.sleep(trans_time / num_trans)
+    num_trans = num_trans_default if num_trans_user == '' else int(num_trans_user)
+    vol_per_order = total_order_vol / num_trans
+    return total_order_vol, trans_time, num_trans, vol_per_order
 
 
-if __name__ == "__main__":
+def set_up_exchanges():
     kraken = KrakenExchange(
         "kraken",
         "https://api.kraken.com/0/public/Depth",
@@ -47,8 +40,25 @@ if __name__ == "__main__":
         {"level": 2},
         "BTC-USD",
     )
+    return [kraken, binance, coinbase]
 
-    exchanges = [binance, kraken, coinbase]
+
+def run_code(trans_time, num_trans, vol_per_order, exchanges, path):
+    total_cost =[]
+    for i in range(0, num_trans):
+        best_price = find_best_price(exchanges, path, vol_per_order)
+        total_cost.append(best_price[0])
+        best_price_df = create_best_price_df(best_price)
+        record_best_price(best_price_df, path)
+        time.sleep(trans_time/num_trans)
+    return sum(total_cost)
+
+def main():
+    total_order_vol, trans_time, num_trans, vol_per_order = get_user_input()
+    exchanges = set_up_exchanges()
     path = "/home/alyona/personal_projects/project_data_fetching/data"
+    total_cost = run_code(trans_time, num_trans, vol_per_order, exchanges, path)
+    print (f'Total best price of {total_order_vol} BTC is {round(total_cost,2)} USD')
 
-    run_code(num_trans, vol_per_order, exchanges, path)
+if __name__ == "__main__":
+    main()
