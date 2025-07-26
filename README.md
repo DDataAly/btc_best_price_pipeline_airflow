@@ -41,6 +41,11 @@ Saved Locally:\
 💠 data/best_deal.csv – records best price and exchange per transaction\
 💠 exchange-specific folders (e.g., data/binance/) store raw JSON snapshots
 
+## 🖥️ Demo Output
+
+![CLI demo](docs/cli_demo_output.png)
+![Local best_csv_demo_output](docs/best_csv_demo_ouput.png)
+
 
 ## 📁 File Structure
 ```
