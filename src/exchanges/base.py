@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 import pandas as pd
@@ -20,8 +21,37 @@ class Exchange:
         self.order_cost_total = order_cost_total
 
     def request_order_book_snapshot(self) -> Dict[str, Any]:
-        snapshot = requests.get(self.url, self.api_request_params).json()
-        return snapshot
+        try:
+            snapshot = requests.get(self.url, self.api_request_params)
+            snapshot.raise_for_status()  # raises a requests.exceptions.HTTPError if the response contains a 4xx or 5xx status code.
+            return snapshot.json()
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"{self.name}: HTTP error occurred: {e}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"{self.name}: A request error occurred: {e}")
+        return None
+
+    def validate_snapshot(self, snapshot: Dict[str, Any]) -> bool:
+
+        if not isinstance(snapshot, dict):
+            logging.error(f"{self.name}: expected a dict, got {type(snapshot)}")
+            return False
+
+        if "bids" not in snapshot or "asks" not in snapshot:
+            logging.error(f"{self.name}: snapshot is missing bids or asks")
+            return False
+
+        if not isinstance(snapshot.get("bids"), list) or not isinstance(
+            snapshot.get("asks"), list
+        ):
+            logging.error(f"{self.name}: bids or asks are not a list")
+            return False
+
+        if len(snapshot.get("bids")) == 0 or len(snapshot.get("asks")) == 0:
+            logging.error(f"{self.name}: bids or asks are empty lists")
+            return False
+
+        return True
 
     def trim_snapshot(self, snapshot: Dict[str, Any]) -> Dict[str, Any]:
         return snapshot
@@ -59,9 +89,9 @@ class Exchange:
             )
 
             order_cost_total = order_full_cost + order_partial_cost
-            return round(order_cost_total,8)
+            return round(order_cost_total, 8)
         except IndexError:
-            print(
+            logging.error(
                 f"The order book in {self.name}"
                 " does not have enough asks to fulfill this order"
             )
