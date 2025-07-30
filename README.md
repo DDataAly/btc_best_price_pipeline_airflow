@@ -45,14 +45,16 @@ Saved Locally:\
 
 ![CLI demo](docs/cli_demo_output.png)
 ![Best_csv_demo_output](docs/best_csv_demo_ouput.png)
+![Log.txt_demo_output](docs/log.txt_demo_output.png)
 
 
 ## 📁 File Structure
 ```
 BTC best price tracker
 ├── main.py                      # Main execution script
-├── data/                        # Saved snapshots and CSV output
-│   └── best_deal.csv
+├── data/                        # Saved snapshots, CSV output and log
+│   ├── best_deal.csv
+│   └── log.txt
 ├── src/
 │   ├── exchanges/               # Exchange-specific API wrappers
 │   │   ├── base.py
@@ -61,6 +63,7 @@ BTC best price tracker
 │   │   └── kraken.py
 │   └── utils/                   # Utility functions
 │       ├── get_best_price.py
+│       ├── logger.py
 │       └── helpers.py
 ├── .gitignore
 ├── requirements.txt
@@ -70,7 +73,7 @@ BTC best price tracker
 ## 📌 Future Improvements
 - Switch to WebSocket streaming for real-time updates
 - Add unit tests for core pricing logic
-- Better exception handling and retry logic for failed API calls
+
 
 
 
