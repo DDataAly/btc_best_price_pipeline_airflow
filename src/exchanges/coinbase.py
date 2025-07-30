@@ -27,7 +27,7 @@ class CoinbaseExchange(Exchange):
         return trimmed_snapshot
 
     def parse_snapshot_to_df(self, snapshot: Dict[str, Any]) -> pd.DataFrame:
-        #Rounded up to 8 digits to ensure full satoshi
-        price_asks = [round(float(record[0]),8) for record in snapshot["asks"]]
-        volume_asks = [round(float(record[1]),8) for record in snapshot["asks"]]
+        # Rounded up to 8 digits to ensure full satoshi
+        price_asks = [round(float(record[0]), 8) for record in snapshot["asks"]]
+        volume_asks = [round(float(record[1]), 8) for record in snapshot["asks"]]
         return pd.DataFrame.from_dict({"price": price_asks, "volume": volume_asks})

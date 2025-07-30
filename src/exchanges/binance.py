@@ -15,7 +15,6 @@ class BinanceExchange(Exchange):
         super().__init__(name, url, api_request_params, currency_pair, order_cost_total)
 
     def parse_snapshot_to_df(self, snapshot: Dict[str, Any]) -> pd.DataFrame:
-        
-        price_asks = [round(float(record[0]),8) for record in snapshot["asks"]]
-        volume_asks = [round(float(record[1]),8) for record in snapshot["asks"]]
+        price_asks = [round(float(record[0]), 8) for record in snapshot["asks"]]
+        volume_asks = [round(float(record[1]), 8) for record in snapshot["asks"]]
         return pd.DataFrame.from_dict({"price": price_asks, "volume": volume_asks})
