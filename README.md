@@ -5,9 +5,21 @@
 A simple CLI tool that finds the **best available price** for purchasing a given amount of BTC by querying multiple cryptocurrency exchanges. It implements a **Dollar Cost Averaging** approach, splitting the total purchase into smaller transactions spaced out over time.
 
 ## 🔧 Tech Stack
-- **Python 3.12** – primary programming language
-- **Pandas** – for tabular data manipulation
-- **Requests** – for interacting with REST APIs
+
+**Language**:  
+- Python 3.12
+
+**Core Libraries**:  
+- `requests` – REST API integration  
+- `pandas` – data handling and transformations  
+- `json` – snapshot serialization  
+- `logging` – event and error tracking  
+- `os`, `time`, `datetime` – OS interaction and scheduling
+
+**Design & Architecture**:  
+- Object-Oriented Design with polymorphic exchange methods  
+- Snapshot validation and structured error logging  
+- Modular file structure with separation of concerns
 
 
 ## 📊 How It Works
@@ -17,7 +29,7 @@ A simple CLI tool that finds the **best available price** for purchasing a given
 - Saves each order book snapshot and best deal data locally
 - Calculates the **total cost** for the entire order after execution
 
-> 🧠 I'm currently working on a follow-up project using **WebSocket streaming** to maintain a live local order book for real-time pricing.
+> 🧠 I'm currently working on a follow-up project using **WebSocket streaming** to maintain a live local order book for real-time pricing.You can check it out [here](https://github.com/DDataAly/local_order_book).
 
 ## ▶️ Usage Instructions
 
