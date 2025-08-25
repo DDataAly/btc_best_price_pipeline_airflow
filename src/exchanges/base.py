@@ -1,6 +1,7 @@
 import logging
 import requests
 import json
+import os
 import pandas as pd
 from typing import Dict, Any
 
@@ -59,7 +60,9 @@ class Exchange:
     def save_order_book_snapshot(
         self, snapshot: Dict[str, Any], path: str, request_time: str
     ):
-        file_name = f"{path}/{self.name}/{self.name}_{str(request_time)}.json"
+        dir_path = os.path.join(path, self.name)
+        os.makedirs(dir_path, exist_ok=True)
+        file_name = os.path.join(dir_path, f"{self.name}_{str(request_time)}.json")
         with open(file_name, "w") as file:
             json.dump(snapshot, file)
 
