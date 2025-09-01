@@ -1,8 +1,9 @@
-# BTC Best Price Tracker – Find the Cheapest BTC Price Across Exchanges
+# BTC Best Price Airflow pipeline – Find the Cheapest BTC Price Across Exchanges
 
 ## 🔰 Overview
 
-A simple CLI tool that finds the **best available price** for purchasing a given amount of BTC by querying multiple cryptocurrency exchanges. It implements a **Dollar Cost Averaging** approach, splitting the total purchase into smaller transactions spaced out over time.
+This project wraps my original BTC Best Price Tracker (https://github.com/DDataAly/btc_best_price_tracker) into an ETL pipeline orchestrated with Airflow
+Work in progress
 
 ## 🔧 Tech Stack
 
