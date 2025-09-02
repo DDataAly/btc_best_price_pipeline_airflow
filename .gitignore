@@ -1,4 +1,5 @@
-venv
+airflow_env
+btc_best_price_env
 **/.pycache
 **/__pycache__
 **.json
